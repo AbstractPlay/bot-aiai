@@ -20,7 +20,15 @@ Standalone AiAi registered bot: HTTPS webhook + SQS worker (Java engine via Lamb
 | `npm test` | Vitest |
 | `npm run sync-deps` | Refresh gameslib/renderer pins from `ci-deps.dev.json` |
 | `npm run start:local` | Local webhook on `PORT` (default 3847) |
+| `npm run layer:pack` | Build `dist/aiaicli-layer.zip` (requires `engine/aiai.jar`) |
+| `npm run layer:publish -- --stage dev` | Publish layer to AWS (`AbstractPlayDev`) |
 | `npx serverless package` | Validate deploy artifact (no AWS deploy) |
+
+Worker runs `java -jar` from `AIAI_CLI_ROOT` or `engine/` locally (`HOME=/tmp`, cwd on CLI root). Phase 3 adds `botQuery` pie for `Swap`.
+
+### CI live jar tests
+
+`test.yml` downloads `aiai.jar` from `aiaicli-dev` (or `aiaicli-prod` on `main` / PRs into `main`) using repo secrets `AWS_KEY` / `AWS_SECRET`. Required IAM on that user: `lambda:ListLayerVersions`, `lambda:GetLayerVersion` on `arn:aws:lambda:us-east-1:*:layer:aiaicli-*`. Optional pin: `AIAI_LAYER_VERSION` env.
 
 Handoff: **`npm run lint`** and **`npm test`** exit 0.
 

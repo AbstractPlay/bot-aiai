@@ -162,6 +162,21 @@ export function stateToAiai(engine: GameBase): string[] {
   return flattenMoveHistory(engine);
 }
 
+/** AP move string from AiAi output (may be pipe-joined compound steps). */
+export function translateAiai(engine: GameBase, move: string): string {
+  if (move === 'resign' || move.toLowerCase() === 'resign') {
+    return 'resign';
+  }
+  if (move === 'Swap') {
+    return 'Swap';
+  }
+  if (!move.includes('|')) {
+    return translateAiaiMove(engine, move);
+  }
+  const parts = move.split('|');
+  return parts.map((part) => translateAiaiMove(engine, part)).join('|');
+}
+
 export function translateAiaiMove(engine: GameBase, move: string): string {
   const uid = gameUid(engine);
 

@@ -11,7 +11,9 @@
     "check-ci-deps": "ap-check-ci-deps --stage dev --strict",
     "sync-deps": "ap-install-deps --stage dev",
     "sync-deps:prod": "ap-install-deps --stage prod",
+    "fetch-aiai-engine": "node scripts/fetch-aiai-engine.mjs",
     "layer:pack": "node scripts/layer-pack.mjs",
+    "layer:publish": "node scripts/layer-publish.mjs",
     "start:local": "tsx src/localServer.ts",
     "package:sls": "serverless package --stage dev",
     "ci:install": "npm ci",
@@ -30,6 +32,7 @@
   "dependencies": {
     "@abstractplay/gameslib": "1.0.0-ci-38147517245.0",
     "@abstractplay/renderer": "1.0.0-ci-38071028664.0",
+    "@aws-sdk/client-lambda": "3.1090.0",
     "@aws-sdk/client-sqs": "3.1090.0"
   },
   "devDependencies": {

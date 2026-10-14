@@ -39,9 +39,9 @@ npm run sync-deps    # refresh pins from ci-deps.dev.json (gameslib + renderer)
 cp .env.example .env # fill after create_bot on dev
 ```
 
-AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (same pattern as [node-backend](https://github.com/AbstractPlay/node-backend)). The **Test** workflow runs on **push** to `develop` or `main` (and on PRs). CI runs `ap-check-ci-deps` and `ap-install-deps`; gameslib dispatch can bump this repo via `dep_update_dev` / `dep_update_prod` once deploy workflows exist (Phase 4). After merging across `develop` and `main`, run `sync-deps` or `sync-deps:prod` on the branch you merged into — do not hand-merge version strings (see `.gitattributes`).
+AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (same pattern as [node-backend](https://github.com/AbstractPlay/node-backend)). The **Test** workflow runs on **push** to `develop` or `main` (and on PRs). It fetches `aiai.jar` from the `aiaicli-{dev|prod}` Lambda layer (AWS secrets `AWS_KEY` / `AWS_SECRET`), installs Java 21, then runs unit tests including a live jar think on trike. CI runs `ap-check-ci-deps` and `ap-install-deps`; gameslib dispatch can bump this repo via `dep_update_dev` / `dep_update_prod` once deploy workflows exist (Phase 4). After merging across `develop` and `main`, run `sync-deps` or `sync-deps:prod` on the branch you merged into — do not hand-merge version strings (see `.gitattributes`).
 
-Place `aiai.jar` under `engine/` (not committed). Seed `engine/mgl/` from the current `aiaicli-prod` layer or this repo once MGL files are checked in.
+`engine/aiai.jar` is **gitignored** (~63 MB). For local Java work, copy it from the deployed `aiaicli-*` layer (`java/lib/aiaicli/aiai.jar` inside the layer zip). MGL rules and `default.mgc` are committed under `engine/`.
 
 ## Commands
 
@@ -52,6 +52,7 @@ Place `aiai.jar` under `engine/` (not committed). Seed `engine/mgl/` from the cu
 | `npm test` | Vitest |
 | `npm run sync-deps` | Refresh gameslib pin (dev) |
 | `npm run layer:pack` | Build `dist/aiaicli-layer.zip` (requires jar) |
+| `npm run layer:publish -- --stage dev` | Publish `aiaicli-dev` layer (AWS CLI + profile) |
 | `npm run start:local` | Local HTTP server for ping / webhook testing (`GET` → `{ operational: true }`) |
 | `npm run package:sls` | `serverless package` (needs AWS deploy bucket access when packaging) |
 

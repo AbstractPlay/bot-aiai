@@ -18,8 +18,22 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      AWS_REGION: us-east-1
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve AiAi layer stage
+        run: |
+          STAGE=dev
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.base_ref }}" = "main" ]; then
+            STAGE=prod
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            STAGE=prod
+          fi
+          echo "AIAI_LAYER_STAGE=$STAGE" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
@@ -51,8 +65,24 @@ jobs:
       - name: Verify lockfile matches ci-deps
         run: npx ap-check-ci-deps --stage dev --strict
 
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: us-east-1
+
+      - name: Fetch aiai.jar from Lambda layer
+        run: npm run fetch-aiai-engine -- --stage "$AIAI_LAYER_STAGE"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - name: Lint
         run: npm run lint
 
-      - name: Test
+      - name: Test (including live AiAi jar)
+        env:
+          BOT_SUBMIT_DISABLED: '1'
         run: npm test
