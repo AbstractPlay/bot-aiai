@@ -38,7 +38,7 @@ npm run sync-deps    # refresh pins from ci-deps.dev.json (gameslib + renderer)
 cp .env.example .env # fill after create_bot on dev
 ```
 
-AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (same pattern as [node-backend](https://github.com/AbstractPlay/node-backend)). CI runs `ap-check-ci-deps` and `ap-install-deps`; gameslib dispatch can bump this repo via `dep_update_dev` / `dep_update_prod` once deploy workflows exist (Phase 4). After merging across `develop` and `main`, run `sync-deps` or `sync-deps:prod` on the branch you merged into — do not hand-merge version strings (see `.gitattributes`).
+AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (same pattern as [node-backend](https://github.com/AbstractPlay/node-backend)). The **Test** workflow runs on **push** to `develop` or `main` (and on PRs). CI runs `ap-check-ci-deps` and `ap-install-deps`; gameslib dispatch can bump this repo via `dep_update_dev` / `dep_update_prod` once deploy workflows exist (Phase 4). After merging across `develop` and `main`, run `sync-deps` or `sync-deps:prod` on the branch you merged into — do not hand-merge version strings (see `.gitattributes`).
 
 Place `aiai.jar` under `engine/` (not committed). Seed `engine/mgl/` from the current `aiaicli-prod` layer or this repo once MGL files are checked in.
 
