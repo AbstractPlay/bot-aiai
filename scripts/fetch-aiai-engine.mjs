@@ -62,30 +62,76 @@ async function downloadLayerZip(version) {
   return zipPath;
 }
 
-function extractJar(zipPath) {
-  const extractDir = path.join(root, 'dist', 'aiaicli-layer-extract');
-  fs.rmSync(extractDir, { recursive: true, force: true });
+function findFileRecursive(dir, fileName) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isFile() && entry.name === fileName) {
+      return full;
+    }
+    if (entry.isDirectory()) {
+      const nested = findFileRecursive(full, fileName);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract layer zip with POSIX paths even when the archive used Windows backslashes.
+ */
+function extractLayerZip(zipPath, extractDir) {
   fs.mkdirSync(extractDir, { recursive: true });
+  const py = `
+import os, sys, zipfile
+zip_path, dest = sys.argv[1], sys.argv[2]
+with zipfile.ZipFile(zip_path) as zf:
+    for name in zf.namelist():
+        if name.endswith("/"):
+            continue
+        norm = name.replace("\\\\", "/").lstrip("/")
+        target = os.path.join(dest, *norm.split("/"))
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        with zf.open(name) as src, open(target, "wb") as out:
+            out.write(src.read())
+`;
+  try {
+    execSync(`python3 -c ${JSON.stringify(py)} "${zipPath}" "${extractDir}"`, { stdio: 'inherit' });
+    return;
+  } catch {
+    // fallback when python3 is unavailable (local Windows without Python)
+  }
   if (process.platform === 'win32') {
     execSync(
       `powershell Expand-Archive -Path "${zipPath}" -DestinationPath "${extractDir}" -Force`,
       { stdio: 'inherit' },
     );
-  } else {
-    execSync(`unzip -q "${zipPath}" -d "${extractDir}"`, { stdio: 'inherit' });
+    return;
   }
-  const cliRoot = path.join(extractDir, 'java', 'lib', 'aiaicli');
-  const jarSrc = path.join(cliRoot, 'aiai.jar');
-  if (!fs.existsSync(jarSrc)) {
-    throw new Error(`Expected ${jarSrc} inside layer zip`);
+  execSync(`unzip -oq -a "${zipPath}" -d "${extractDir}"`, { stdio: 'inherit' });
+}
+
+function extractJar(zipPath) {
+  const extractDir = path.join(root, 'dist', 'aiaicli-layer-extract');
+  fs.rmSync(extractDir, { recursive: true, force: true });
+  extractLayerZip(zipPath, extractDir);
+
+  const jarSrc = findFileRecursive(extractDir, 'aiai.jar');
+  if (!jarSrc) {
+    throw new Error(`Expected aiai.jar inside layer zip (searched under ${extractDir})`);
   }
+
+  const cliRoot = path.dirname(jarSrc);
   const engineDir = path.join(root, 'engine');
   fs.mkdirSync(engineDir, { recursive: true });
   fs.copyFileSync(jarSrc, path.join(engineDir, 'aiai.jar'));
+
   const mgc = path.join(cliRoot, 'default.mgc');
   if (fs.existsSync(mgc)) {
     fs.copyFileSync(mgc, path.join(engineDir, 'default.mgc'));
   }
+
   const mglSrc = path.join(cliRoot, 'mgl');
   const mglDst = path.join(engineDir, 'mgl');
   if (fs.existsSync(mglSrc)) {

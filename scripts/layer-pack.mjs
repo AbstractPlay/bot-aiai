@@ -31,14 +31,17 @@ if (fs.existsSync(mglDir)) {
 }
 
 const zipPath = path.join(outDir, 'aiaicli-layer.zip');
+const stagingParent = path.join(outDir, 'layer-staging');
 fs.mkdirSync(outDir, { recursive: true });
 if (fs.existsSync(zipPath)) {
   fs.unlinkSync(zipPath);
 }
 
-const stagingParent = path.join(outDir, 'layer-staging');
-execSync(`powershell Compress-Archive -Path "${path.join(stagingParent, 'java')}" -DestinationPath "${zipPath}"`, {
-  stdio: 'inherit',
-});
+// POSIX paths inside the zip (Lambda + Linux unzip). Avoid PowerShell Compress-Archive (backslashes).
+if (process.platform === 'win32') {
+  execSync(`tar -a -cf "${zipPath}" -C "${stagingParent}" java`, { stdio: 'inherit' });
+} else {
+  execSync(`zip -rq "${zipPath}" java`, { cwd: stagingParent, stdio: 'inherit' });
+}
 
 console.log(`Wrote ${zipPath}`);
