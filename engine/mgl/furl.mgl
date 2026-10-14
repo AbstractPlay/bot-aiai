@@ -1,0 +1,44 @@
+{
+	"detail":
+	{
+		"name":"Furl",
+		"author":"Stephen Tavener",
+		"description":"Either furl up a row of your pieces, or unfurl a stack.  If you have a piece in your end row at the <em>start<\/start> of your turn, you win.",
+		"instructions":"<h2>Play<\/h2><p>Each turn, choose one of two types of moves:<\/p><dl><dt>Furl<\/dt><dd>Choose two or more of your pieces in an unbroken line, and stack them on the piece at the end of that line.<\/dd><dt>Unfurl<\/dt><dd>Choose a stack (at least two pieces) and sow them one per space in a straight line starting in the space in front of your stack. Intermediate spaces must be empty, but the final space may be occupied by an enemy piece or stack. If so, you capture those pieces.<\/dd><\/dl><h2>Goal<\/h2><p>You win if you have a piece or stack on the row farthest from you at the start of your turn.<\/p><p>You lose if you have no legal moves.<\/p><h2>Variants<\/h2><p>In the standard game, you can only furl onto a single piece.  In the 'multiFurl' option you can furl multiple times onto a stack to create a bigger stack.<\/p><h2>Liner Notes<\/h2><p>My original concept for the movement was some kind of animal that moved by gathering itself up, then dropping down again; the goal came later.<\/p>",
+		"controls":"",
+		"history":"(c) 2020 Stephen Tavener",
+		"bgg_url":"https:\/\/www.boardgamegeek.com/boardgame/325422/furl",
+		"AiAi_version":1.0,
+		"url":"http:\/\/mrraow.com/uploads/MyDesigns/my_designs.html",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"Combinatorial 2020",
+			"mechanism":"Capture,Movement,Race,Stacking",
+			"skillLevel":""
+		},
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com"
+		"implementor_url":"http:\/\/mrraow.com",
+	},
+	"world":
+	{
+		"multiFurl":false,
+		"packing":"sparse",
+		"numPlayers":2,
+		"board":
+		{
+			"topology":
+			{
+				"size":4,
+				"class":"world.topology.HexHex"
+			},
+			"skin":
+			{
+				"class":"world.board.skin.HexHexBoard"
+			}
+		}
+	},
+	"class":"game.st.furl.FurlGame"
+}

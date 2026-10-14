@@ -20,6 +20,7 @@ Platform bot protocol and registration are documented in [node-backend `/backend
 | `engine/aiai.jar` | AiAi binary (local only; gitignored) |
 | `scripts/` | `layer:pack` / `layer:publish` for the `aiaicli` Lambda layer |
 | `api/` | Lambda entrypoints (Serverless) |
+| `serverless.yml` | Webhook Function URL, move queue, worker (package/deploy in Phase 4) |
 
 Dialect logic is copied from gameslib during extraction so gameslib can drop the legacy `aiai` flag after cutover.
 
@@ -51,7 +52,8 @@ Place `aiai.jar` under `engine/` (not committed). Seed `engine/mgl/` from the cu
 | `npm test` | Vitest |
 | `npm run sync-deps` | Refresh gameslib pin (dev) |
 | `npm run layer:pack` | Build `dist/aiaicli-layer.zip` (requires jar) |
-| `npm run start:local` | Local HTTP server for ping / webhook testing |
+| `npm run start:local` | Local HTTP server for ping / webhook testing (`GET` → `{ operational: true }`) |
+| `npm run package:sls` | `serverless package` (needs AWS deploy bucket access when packaging) |
 
 ## Environment
 

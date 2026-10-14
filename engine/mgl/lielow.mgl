@@ -1,0 +1,61 @@
+
+{
+	"detail":
+	{
+		"name":"Lielow",
+		"description":"",
+		"implementor_url":"",
+		"author":"Alek Erickson, Michael Amundsen",
+		"history":"(c) 2021",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"Board",
+			"family":"Combinatorial 2021",
+			"mechanism":"",
+			"skillLevel":"Standard"
+		},
+		"bgg_url":"https:\/\/boardgamegeek.com/boardgame/349408/lielow",
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com",
+		"implementor_url":"http:\/\/mrraow.com/uploads/MyDesigns/my_designs.html",
+		"AiAi_version":5.0,
+		"url":""
+		"instructions":
+"
+<h3>Rules:</h3>
+<ul>
+<li>Each turn, you move one of your stacks in a straight (orthogonal or diagonal) line a number of squares exactly equal to the size of the moved stack. (Note: The size of a stack is the number of checkers in it – not counting the crown.)
+<li>If the stack lands on an empty space, it grows by the addition of 1 checker of your color.
+<li>If the stack lands on an enemy stack, the enemy stack is removed and your stack shrinks down to 1 of your color (unless it was already of size 1, in which case its size simply does not change).
+<li>It is not legal to land on a friendly stack.
+<li>Jumping over stacks is allowed.
+<li>Stacks may also jump off the board, thereby removing themselves from the game.
+<li>Passing is not allowed (i.e. you must move a stack each turn).
+</ul>
+
+<p>The position of the crowns change throughout the game, and is determined by the following rule:</p>
+<ul>
+<li>After each move (both your own and your opponent's), if your biggest stack is uniquely tall among your stacks, put your crown on that stack. There is no other way the crown can change heads. The stack with a crown on it is your king.
+</ul>
+
+<p>You win if your opponent's king is removed from the board.</p>
+",
+	},
+	"world":
+	{
+		"board":
+		{
+			"topology":
+			{
+				"size":8,
+				"class":"world.topology.SquareAll"
+			},
+			"skin":
+			{
+				"class":"skin.ChessBoard"
+			}
+		}
+	},
+	"class":"game.ae.lielow.LielowGame"
+}

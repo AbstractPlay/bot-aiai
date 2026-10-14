@@ -1,0 +1,54 @@
+{
+	"detail":
+	{
+		"instructions":"Move one of your amazons (as a chess queen). After moving, that piece shoots an arrow (as a chess queen) which permanently blocks the destination space. Last to make a complete move wins.",
+		"implementor_url":"",
+		"author":"Walter Zamkauskas",
+		"name":"Amazons",
+		"description":"Last to move wins.",
+		"history":"(c) 1988",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"",
+			"mechanism":"Stalemate,Territory,Movement",
+			"skillLevel":""
+		},
+		"bgg_url":"https:\/\/boardgamegeek.com\/boardgame\/2125\/amazons",
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com",
+		"AiAi_version":1.0,
+		"url":""
+	},
+	"world":
+	{
+		"nodeSelectionMethod":"UCB",
+		"resignWhenHopeless" : true,
+		"start":
+		[
+			{
+				"where": [ "a4", "d1", "g1", "j4" ],
+				"who":1
+			},
+			{
+				"where": [ "a7", "d10", "g10", "j7" ],
+				"who":2
+			}
+		],
+		"numPlayers":2,
+		"board":
+		{
+			"topology":
+			{
+				"size":10,
+				"class":"world.topology.SquareAll"
+			},
+			"skin":
+			{
+				"class":"skin.RectangleBoard"
+			}
+		}
+	},
+	"class":"game.misc.Amazons2"
+}

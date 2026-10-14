@@ -13,6 +13,7 @@
     "sync-deps:prod": "ap-install-deps --stage prod",
     "layer:pack": "node scripts/layer-pack.mjs",
     "start:local": "tsx src/localServer.ts",
+    "package:sls": "serverless package --stage dev",
     "ci:install": "npm ci",
     "ci:install:prod": "npm ci"
   },

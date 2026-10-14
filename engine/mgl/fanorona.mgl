@@ -1,0 +1,66 @@
+{
+	"detail":
+	{
+		"description":"A traditional game from Madagascar",
+		"author":"Traditional",
+		"name":"Fanorona",
+		"history":"Traditional",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"Traditional",
+			"mechanism":"Movement,Capture",
+			"skillLevel":""
+		},
+		"instructions":"
+<h2>Play</h2>
+<p>Each move, you move a piece one space along a line. Capturing is compulsory, and results under the following circumstances:</p>
+<ul>
+<li><em>Approach</em> After the move, there are one or more enemy pieces directly in front of the moving piece; they are captured.</li>
+<li><em>Withdrawal</em> Before the move, there were one or more enemy pieces directly behind the moving piece; they are captured.</li>
+</ul>
+<p>If both of the above apply, choose one.</p>
+<p>After capturing, the same piece may move again; so long as each subsequent move results in a capture.
+During the continuation moves, you may not move twice in the same direction, or revisit the same space.</p>
+
+<h2>Goal</h2>
+<p>Capture all your opponent's pieces to win.</p>
+
+<h2>Variant</h2>
+<p>There seems to be some debate as to whether continuation captures are optional or required.  Ai Ai allows you to choose.</p>
+
+
+",
+		"bgg_url":"https:\/\/www.boardgamegeek.com/boardgame/4386/fanorona",
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com",
+		"implementor_url":"http:\/\/mrraow.com\/index.php\/aiai-home\/",
+		"AiAi_version":1.0,
+		"url":""
+	},
+	"world":
+	{
+ 		"nodeSelectionMethod":"UCB",
+		"compulsoryContinuations" : false,
+		"board":
+		{
+			"topology":
+			{
+				"class":"game.trad.fanorona.FanTopology",
+				"rows":5,
+				"cols":9
+			},
+			"skin":
+			{
+				"class":"game.trad.fanorona.FanoronaBoard"
+			}
+		}
+	},
+	"search":
+	{
+		"gameMoveLimit":1000,
+		"playoutMoveLimit":1000
+	},
+	"class":"game.trad.fanorona.Fanorona"
+}

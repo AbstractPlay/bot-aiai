@@ -1,0 +1,35 @@
+{
+	"detail":
+	{
+		"description":"Trike is a two-player, combinatorial, abstract strategy game designed by Alek Erickson in April 2020.",
+		"instructions":"Players take turns moving a neutral pawn around on the board (passing is not allowed). The neutral pawn can move any number of empty points, in any direction in a straight line, but cannot move onto, or jump over occupied points. When a player moves the pawn, first they place a checker of their own color, onto the destination point. Then they move the pawn on top of it. When the pawn is trapped, the game is over. At the end of the game, each player gets a point for each checker of their own color adjacent to, or underneath, the pawn. The person with the highest score wins.<strong>Pie rule:<\/strong> at the beginning of the game, the first player chooses a color and puts a checker on any point of the board, with the pawn on top of it. At this time only, the second player has a one-time chance to swap sides instead of making a regular move.",
+		"author":"Alek Erickson",
+		"name":"Trike",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"Board",
+			"family":"Combinatorial 2020",
+			"mechanism":"Movement,Scoring",
+			"skillLevel":"Beginner"
+		},
+		"bgg_url":"https:\/\/www.boardgamegeek.com\/boardgame\/307379\/trike"
+	},
+	"world":
+	{
+		"numPlayers":2,
+		"board":
+		{
+			"topology":
+			{
+				"size":11,
+				"class":"world.topology.TriHex"
+			},
+			"skin":
+			{
+				"class":"world.board.skin.YBoard"
+			}
+		}
+	},
+	"class":"game.ae.trike.TrikeGame"
+}

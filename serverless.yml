@@ -1,0 +1,143 @@
+service: bot-aiai
+org: abstractplay
+frameworkVersion: '4'
+configValidationMode: warn
+
+build:
+  esbuild: false
+
+plugins:
+  - serverless-esbuild
+
+custom:
+  stageConfig:
+    dev:
+      profile: AbstractPlayDev
+      botTokenUrl: https://abstract-play-bots-dev.auth.us-east-1.amazoncognito.com/oauth2/token
+      botOAuthScope: default-m2m-resource-server-dev/communicate
+      botQueryUrl: https://alyhqu85me.execute-api.us-east-1.amazonaws.com/dev/botQuery
+    prod:
+      profile: AbstractPlayProd
+      botTokenUrl: https://botauth.abstractplay.com/oauth2/token
+      botOAuthScope: default-m2m-resource-server-zssvzy/communicate
+      botQueryUrl: https://7n1lziet28.execute-api.us-east-1.amazonaws.com/prod/botQuery
+
+  esbuild:
+    tsconfig: ./tsconfig.json
+    bundle: true
+    sourcemap: false
+    format: esm
+    outExtension:
+      .js: .mjs
+    platform: node
+    target: node24
+    external:
+      - '@abstractplay/gameslib'
+      - '@abstractplay/renderer'
+      - '@aws-sdk/*'
+      - '@smithy/*'
+    exclude:
+      - '@abstractplay/gameslib'
+      - '@abstractplay/renderer'
+
+package:
+  excludeDevDependencies: true
+  patterns:
+    - '!node_modules/@abstractplay/**'
+    - '!node_modules/@aws-sdk/**'
+    - '!engine/aiai.jar'
+    - '!dist/**'
+    - '!**/*.zip'
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  stage: ${opt:stage, 'dev'}
+  profile: ${self:custom.stageConfig.${self:provider.stage}.profile}
+  region: us-east-1
+  logRetentionInDays: 14
+  stackTags:
+    ap:service: bot-aiai
+    ap:stage: ${self:provider.stage}
+  tags:
+    ap:service: bot-aiai
+    ap:stage: ${self:provider.stage}
+  environment:
+    MOVE_QUEUE_URL:
+      Ref: MoveQueue
+    BOT_TOKEN_URL: ${self:custom.stageConfig.${self:provider.stage}.botTokenUrl}
+    BOT_OAUTH_SCOPE: ${self:custom.stageConfig.${self:provider.stage}.botOAuthScope}
+    BOT_QUERY_URL: ${self:custom.stageConfig.${self:provider.stage}.botQueryUrl}
+    BOT_CLIENT_ID: ${env:BOT_CLIENT_ID, ''}
+    BOT_CLIENT_SECRET: ${env:BOT_CLIENT_SECRET, ''}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:GetQueueAttributes
+          Resource:
+            Fn::GetAtt:
+              - MoveQueue
+              - Arn
+        - Effect: Allow
+          Action:
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+            - sqs:ChangeMessageVisibility
+          Resource:
+            Fn::GetAtt:
+              - MoveQueue
+              - Arn
+
+functions:
+  webhook:
+    handler: api/webhook.handler
+    memorySize: 256
+    timeout: 10
+    url: true
+    tags:
+      ap:service: bot-aiai
+      ap:stage: ${self:provider.stage}
+
+  worker:
+    handler: api/worker.handler
+    memorySize: 1769
+    timeout: 60
+    reservedConcurrency: 1
+    tags:
+      ap:service: bot-aiai
+      ap:stage: ${self:provider.stage}
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MoveQueue
+              - Arn
+          batchSize: 1
+          maximumBatchingWindow: 0
+    # Phase 2: attach republished aiaicli layer + Java 21 runtime or container image.
+
+resources:
+  Resources:
+    MoveQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: bot-aiai-${self:provider.stage}-move
+        VisibilityTimeout: 120
+        MessageRetentionPeriod: 1209600
+        Tags:
+          - Key: ap:service
+            Value: bot-aiai
+          - Key: ap:stage
+            Value: ${self:provider.stage}
+
+  Outputs:
+    WebhookFunctionUrl:
+      Description: HTTPS endpoint for AP bot webhooks
+      Value:
+        Fn::GetAtt:
+          - WebhookLambdaFunctionUrl
+          - FunctionUrl

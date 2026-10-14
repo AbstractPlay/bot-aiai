@@ -6,7 +6,10 @@ const queue = createMoveQueueSender();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const method = event.requestContext.http.method;
-  const rawBody = event.body ?? '';
+  let rawBody = event.body ?? '';
+  if (event.isBase64Encoded && rawBody) {
+    rawBody = Buffer.from(rawBody, 'base64').toString('utf8');
+  }
   const headers = event.headers ?? {};
 
   const result = await handleWebhookRequest(method, rawBody, headers, queue);

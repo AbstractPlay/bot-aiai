@@ -1,0 +1,56 @@
+{
+	"detail":
+	{
+		"description":"",
+		"name":"Zola",
+		"instructions":"
+<h2>MOVE TYPES</h2>
+<p>There are two types of moves in Zola: non-capturing and capturing.</p>
+
+<h3>NON-CAPTURING MOVES</h3>
+<p>The non-capturing move is a king-like move to an adjacent (horizontally, vertically, or diagonally), unoccupied square. A non-capturing move must increase the straight line distance to the center point of the board.</p>
+
+<h3>CAPTURING MOVES</h3>
+<p>The capturing move is a queen-like move along a straight (horizontal, vertical or diagonal) sequence of zero or more unoccupied squares terminating with an enemy occupied square.
+The enemy checker is removed and replaced with the capturing checker.
+A capturing move must maintain or decrease the straight line distance to the center point of the board.</p>
+
+<h2>OBJECT OF THE GAME</h2>
+<p>To win you must capture all enemy checkers.</p>
+",
+		"author":"Mark Steere",
+		"history":"(c) 2021",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"Unequal Spaces,Combinatorial 2021",
+			"mechanism":"",
+			"skillLevel":""
+		},
+		"bgg_url":"https:\/\/www.boardgamegeek.com/boardgame/331666/zola",
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com",
+		"implementor_url":"http:\/\/mrraow.com",
+		"AiAi_version":5.0,
+		"url":"http:\/\/www.marksteeregames.com/index.html"
+	},
+	"world":
+	{
+		"numPlayers":2,
+
+		"board":
+		{
+			"topology":
+			{
+				"size":6,
+				"class":"world.topology.SquareAll"
+			},
+			"skin":
+			{
+				"class":"skin.ChessBoard"
+			}
+		}
+	},
+	"class":"game.steere_mark.zola.ZolaGame"
+}

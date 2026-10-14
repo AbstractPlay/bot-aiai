@@ -1,0 +1,45 @@
+{
+	"detail":
+	{
+		"instructions":"<p>A stack is said to be <em>seen<\/em> from a hex, when they are connected by a straight line, with no stacks in between.The players take turns <em>settling<\/em> hexes by placing a stack of their tokens on a hex of their choice. The stack height is equal to the number of your stacks in sight of the settled hex.<\/p> <p>Only hexes that see at least one of your stacks may be settled. Removing a stack occupying a hex and re-settling it with a new stack is possible, as long as the new stack is taller than the previous one. This works with opponent stacks (to capture), or your own stacks (to reinforce).<\/p><p>Before the game, the host sets up the board and the guest decides which side he wants to play. The recommended way of setting up the board is to put a stack of two neutral tokens in the center, and then give each player a single starting token in a cell of the host's choosing<\/p><p>The game ends when no more moves can be made by either player, or after two successive passes. The player who occupies over half the board wins.<\/p>",
+		"controls":"",
+		"author":"Mike Zapawa",
+		"description":"Settle the most spaces to win.",
+		"history":"(c) 2020",
+		"bgg_url":"https:\/\/www.boardgamegeek.com\/boardgame\/318702\/tumbleweed",
+		"AiAi_version":1.0,
+		"url":"",
+		"implementor_url":"",
+		"name":"Tumbleweed",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"Combinatorial 2020",
+			"mechanism":"Capture,Territory",
+			"skillLevel":""
+		},
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com"
+	},
+	"world":
+	{
+		"resignWhenHopeless":true,
+		"display":"legal",
+		"nodeSelectionMethod":"UCB",
+		"numPlayers":2,
+		"board":
+		{
+			"topology":
+			{
+				"size":8,
+				"class":"world.topology.HexHex"
+			},
+			"skin":
+			{
+				"class":"world.board.skin.HexHexBoard"
+			}
+		}
+	},
+	"class":"game.zapawa.tumbleweed.TumbleweedGame"
+}

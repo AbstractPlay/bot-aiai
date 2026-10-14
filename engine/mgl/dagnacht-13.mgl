@@ -1,0 +1,49 @@
+{
+	"detail":
+	{
+		"instructions":
+"
+Place a piece of your colour on a DARK square, or move a piece in play one step orthogonally.
+First to make a row of 5 orthogonal, or a diagonal line of 4 on LIGHT squares wins.
+",
+		"author":"Chris Huntoon",
+		"name":"Dag en Nacht",
+		"description":"A make-a-line game inspired by M. C. Escher's <em>Dag en Nacht</em>",
+		"url":""
+		"history":"(c) 2021",
+		"categories":
+		{
+			"play":"Combinatorial",
+			"components":"",
+			"family":"Line games,Unequal Spaces,Combinatorial 2021",
+			"mechanism":"Line",
+			"skillLevel":""
+		},
+		"bgg_url":"https:\/\/boardgamegeek.com/boardgame/347536/dag-en-nacht",
+		"implementor":"Stephen Tavener",
+		"implementor_email":"mrraow@gmail.com",
+		"AiAi_version":4.0,
+		"implementor_url":"http:\/\/mrraow@gmail.com",
+	},
+	"world":
+	{
+		"numPlayers":2,
+		"allowBWBWB" : false,
+ 		//"nodeSelectionMethod":"UCB",
+		"useGuctHashing":false,
+		//"lastGoodMove":true,
+		//"explore":0.7,
+		//"useTD": true,
+
+		"board":
+		{
+			"topology":
+			{
+				"size":13,
+				"class":"world.topology.SquareAll"
+			},
+			"skin": { "class":"game.huntoon.DeNBoard" }
+		}
+	},
+	"class":"game.huntoon.DagEnNacht"
+}
