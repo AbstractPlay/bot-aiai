@@ -1,0 +1,47 @@
+{
+  "name": "abstractplay-bot-aiai",
+  "version": "1.0.0-beta",
+  "description": "Abstract Play AiAi registered bot (webhook + Java worker)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && npm run check-ci-deps && npm run typecheck",
+    "test": "vitest run",
+    "check-ci-deps": "ap-check-ci-deps --stage dev --strict",
+    "sync-deps": "ap-install-deps --stage dev",
+    "sync-deps:prod": "ap-install-deps --stage prod",
+    "layer:pack": "node scripts/layer-pack.mjs",
+    "start:local": "tsx src/localServer.ts",
+    "ci:install": "npm ci",
+    "ci:install:prod": "npm ci"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbstractPlay/bot-aiai.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=24",
+    "npm": "11.6.2"
+  },
+  "packageManager": "npm@11.6.2",
+  "dependencies": {
+    "@abstractplay/gameslib": "1.0.0-ci-38147517245.0",
+    "@abstractplay/renderer": "1.0.0-ci-38071028664.0",
+    "@aws-sdk/client-sqs": "3.1090.0"
+  },
+  "devDependencies": {
+    "@abstractplay/ap-deps-tools": "^1.1.2",
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.15.29",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "serverless": "4.42.0",
+    "serverless-esbuild": "^1.57.0",
+    "tsx": "^4.8.1",
+    "typescript": "^5.0.4",
+    "vitest": "^3.2.4"
+  }
+}

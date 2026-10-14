@@ -1,0 +1,9 @@
+# Keep production dependency pins when merging develop into main.
+ci-deps.prod.json merge=ours
+
+# Keep develop dependency pins when merging other branches into develop.
+ci-deps.dev.json merge=ours
+
+# Keep target-branch manifests on cross-branch merges; run sync-deps on the branch you merged into.
+package.json merge=ours
+package-lock.json merge=ours

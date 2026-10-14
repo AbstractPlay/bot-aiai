@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.serverless/
+.esbuild/
+coverage/
+.env
+engine/aiai.jar
+*.zip
