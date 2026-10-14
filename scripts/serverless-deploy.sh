@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Deploy bot-aiai stack with resolved dependency layers.
+#
+# Usage: scripts/serverless-deploy.sh <stage>
+# Example: scripts/serverless-deploy.sh dev
+set -euo pipefail
+
+STAGE="${1:?usage: serverless-deploy.sh <stage>}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+eval "$(node scripts/resolve-layer-arns.mjs --stage "$STAGE")"
+
+echo "gameslib layer: $GAMESLIB_LAYER_ARN"
+echo "aiaicli layer:  $AIAI_CLI_LAYER_ARN"
+echo "java layer:     $JAVA_LAYER_ARN"
+
+exec npx serverless deploy --stage "$STAGE" \
+  --param="gameslibLayerArn=${GAMESLIB_LAYER_ARN}" \
+  --param="aiaicliLayerArn=${AIAI_CLI_LAYER_ARN}" \
+  --param="javaLayerArn=${JAVA_LAYER_ARN}"

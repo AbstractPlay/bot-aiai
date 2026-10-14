@@ -43,7 +43,11 @@ export type ThinkLoopResult =
   | { ok: false; reason: string };
 
 function javaBinary(): string {
-  return process.env.AIAI_JAVA?.trim() || 'java';
+  const configured = process.env.AIAI_JAVA?.trim();
+  if (configured) {
+    return configured;
+  }
+  return 'java';
 }
 
 async function runAiaiCli(args: string[]): Promise<{ stdout: string; stderr: string; code: number | null }> {

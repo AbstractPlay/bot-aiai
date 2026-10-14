@@ -1,0 +1,40 @@
+name: Publish AiAi layer
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Stage (dev or prod)
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: us-east-1
+
+      - name: Fetch jar from existing layer (pack source of truth for mgl in git)
+        run: npm run fetch-aiai-engine -- --stage ${{ inputs.stage }}
+
+      - name: Pack layer zip
+        run: npm run layer:pack
+
+      - name: Publish layer
+        run: npm run layer:publish -- --stage ${{ inputs.stage }}

@@ -1,5 +1,5 @@
 import type { GameBase } from '@abstractplay/gameslib';
-import { submitBotMove } from '../botClient.js';
+import { submitBotMove, submitBotPie } from '../botClient.js';
 import { translateAiai } from '../dialect/index.js';
 
 export type SubmitApMoveResult =
@@ -11,19 +11,28 @@ export async function submitApMoveFromAiai(
   params: { metaGame: string; gameid: string; aiaiMove: string },
 ): Promise<SubmitApMoveResult> {
   const apMove = translateAiai(engine, params.aiaiMove);
-
-  if (params.aiaiMove === 'Swap' || apMove === 'Swap') {
-    console.log('submitApMove: Swap → pie verb (Phase 3); skipping botQuery', {
-      gameid: params.gameid,
-      metaGame: params.metaGame,
-    });
-    return { ok: true, apMove, submitted: false };
-  }
+  const isSwap = params.aiaiMove === 'Swap' || apMove === 'Swap';
 
   const clientId = process.env.BOT_CLIENT_ID?.trim();
   const clientSecret = process.env.BOT_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret || process.env.BOT_SUBMIT_DISABLED === '1') {
     return { ok: true, apMove, submitted: false };
+  }
+
+  if (isSwap) {
+    const result = await submitBotPie({
+      clientId,
+      clientSecret,
+      gameid: params.gameid,
+      metaGame: params.metaGame,
+    });
+    if (result.statusCode < 200 || result.statusCode >= 300) {
+      return {
+        ok: false,
+        reason: `botQuery pie failed (${result.statusCode}): ${result.body.slice(0, 500)}`,
+      };
+    }
+    return { ok: true, apMove: 'Swap', submitted: true };
   }
 
   const result = await submitBotMove({

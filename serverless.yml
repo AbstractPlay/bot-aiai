@@ -3,6 +3,12 @@ org: abstractplay
 frameworkVersion: '4'
 configValidationMode: warn
 
+params:
+  default:
+    gameslibLayerArn: ''
+    aiaicliLayerArn: ''
+    javaLayerArn: ''
+
 build:
   esbuild: false
 
@@ -107,6 +113,12 @@ functions:
     memorySize: 1769
     timeout: 60
     reservedConcurrency: 1
+    environment:
+      AIAI_CLI_ROOT: /opt/java/lib/aiaicli
+    layers:
+      - ${param:gameslibLayerArn}
+      - ${param:aiaicliLayerArn}
+      - ${param:javaLayerArn}
     tags:
       ap:service: bot-aiai
       ap:stage: ${self:provider.stage}
@@ -118,7 +130,6 @@ functions:
               - Arn
           batchSize: 1
           maximumBatchingWindow: 0
-    # Phase 2: attach republished aiaicli layer + Java 21 runtime or container image.
 
 resources:
   Resources:

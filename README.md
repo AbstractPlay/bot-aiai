@@ -52,7 +52,7 @@ AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (sa
 | `npm test` | Vitest |
 | `npm run sync-deps` | Refresh gameslib pin (dev) |
 | `npm run layer:pack` | Build `dist/aiaicli-layer.zip` (requires jar) |
-| `npm run layer:publish -- --stage dev` | Publish `aiaicli-dev` layer (AWS CLI + profile) |
+| `npm run layer:publish -- --stage dev` | Publish `aiaicli-dev` layer (AWS SDK + profile) |
 | `npm run start:local` | Local HTTP server for ping / webhook testing (`GET` → `{ operational: true }`) |
 | `npm run package:sls` | `serverless package` (needs AWS deploy bucket access when packaging) |
 
@@ -63,6 +63,8 @@ See `.env.example`. Stage-specific values match [node-backend `serverless.yml`](
 ## AWS
 
 Serverless stack (webhook Function URL + SQS + worker Lambda) tags resources with `ap:service=bot-aiai` and `ap:stage` for Cost Explorer. Dev and prod are separate stages and bot registrations.
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for CI workflows, GitHub secrets, `create_bot`, and layer publish.
 
 ## License
 
