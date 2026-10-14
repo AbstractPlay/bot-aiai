@@ -9,15 +9,19 @@ def main() -> None:
     zip_path, dest = sys.argv[1], sys.argv[2]
     os.makedirs(dest, exist_ok=True)
     with zipfile.ZipFile(zip_path) as zf:
-        for name in zf.namelist():
-            if name.endswith("/"):
+        for info in zf.infolist():
+            if info.is_dir():
                 continue
-            norm = name.replace("\\", "/").lstrip("/")
+            norm = info.filename.replace("\\", "/").lstrip("/")
+            if not norm or norm.endswith("/"):
+                continue
             target = os.path.join(dest, *norm.split("/"))
             parent = os.path.dirname(target)
             if parent:
                 os.makedirs(parent, exist_ok=True)
-            with zf.open(name) as src, open(target, "wb") as out:
+            if os.path.isdir(target):
+                continue
+            with zf.open(info) as src, open(target, "wb") as out:
                 out.write(src.read())
 
 
