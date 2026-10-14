@@ -9,11 +9,25 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-dev-bot-aiai
+  group: deploy-dev
   cancel-in-progress: true
 
 jobs:
+  test:
+    uses: ./.github/workflows/ci-test.yml
+    with:
+      ap_deps_stage: dev
+      aiai_layer_stage: dev
+      ap_gameslib_version: ${{ github.event.client_payload.gameslib_version }}
+      ap_renderer_version: ${{ github.event.client_payload.renderer_version }}
+      ap_source: ${{ github.event.client_payload.source_run_id && format('gameslib-ci-{0}', github.event.client_payload.source_run_id) || '' }}
+    secrets:
+      PAT_READ_PACKAGES: ${{ secrets.PAT_READ_PACKAGES }}
+      AWS_KEY: ${{ secrets.AWS_KEY }}
+      AWS_SECRET: ${{ secrets.AWS_SECRET }}
+
   deploy-dev:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -33,6 +47,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
 
       - name: Pin npm
         run: npm install -g npm@11.6.2
@@ -71,28 +86,6 @@ jobs:
           commit_message: "deps: sync AP versions [skip ci]"
           file_pattern: "ci-deps.dev.json package-lock.json package.json"
           disable_globbing: true
-
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
-          aws-region: us-east-1
-
-      - name: Fetch aiai.jar from Lambda layer
-        run: npm run fetch-aiai-engine -- --stage dev
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        env:
-          BOT_SUBMIT_DISABLED: '1'
-        run: npm test
 
       - name: Configure AWS profile for Serverless CLI
         uses: Fooji/create-aws-profile-action@v1

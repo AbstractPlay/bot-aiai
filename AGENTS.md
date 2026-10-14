@@ -28,10 +28,12 @@ Worker runs `java -jar` from `AIAI_CLI_ROOT` or `engine/` locally (`HOME=/tmp`, 
 
 ### CI live jar tests
 
-`test.yml` downloads `aiai.jar` from `aiaicli-dev` (or `aiaicli-prod` on `main` / PRs into `main`) using repo secrets `AWS_KEY` / `AWS_SECRET`. Required IAM on that user: `lambda:ListLayerVersions`, `lambda:GetLayerVersion` on `arn:aws:lambda:us-east-1:*:layer:aiaicli-*`. Optional pin: `AIAI_LAYER_VERSION` env.
+Reusable workflow `.github/workflows/ci-test.yml` (lint + Vitest + jar) runs on PRs via `test.yml`, and gates **Deploy Dev** on `develop` push. It downloads `aiai.jar` from `aiaicli-dev` (or `aiaicli-prod` on PRs into `main`) using `AWS_KEY` / `AWS_SECRET`. Required IAM: `lambda:ListLayerVersions`, `lambda:GetLayerVersion` on `arn:aws:lambda:us-east-1:*:layer:aiaicli-*`. Optional pin: `AIAI_LAYER_VERSION` env.
 
 Handoff: **`npm run lint`** and **`npm test`** exit 0.
 
 ## Dependencies
 
 Pins in `ci-deps.dev.json` / `ci-deps.prod.json`; CI uses `ap-install-deps`. Do not commit `file:` deps or `engine/aiai.jar`.
+
+Local bot OAuth: `.env.dev` / `.env.prod` (from `*.example`; gitignored). `npm run start:local:dev` and `scripts/serverless-deploy.sh` load them; existing process env wins (CI secrets).

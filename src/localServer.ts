@@ -1,4 +1,5 @@
 import http from 'node:http';
+// Env: use `npm run start:local:dev` / `start:local:prod` (loads `.env.dev` / `.env.prod`).
 import { createMoveQueueSender } from './queue/moveQueue.js';
 import { handleWebhookRequest } from './webhook/handler.js';
 

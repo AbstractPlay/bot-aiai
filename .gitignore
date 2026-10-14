@@ -4,5 +4,8 @@ dist/
 .esbuild/
 coverage/
 .env
+.env.dev
+.env.prod
+.env.local
 engine/aiai.jar
 *.zip

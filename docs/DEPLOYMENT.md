@@ -12,14 +12,14 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 | `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` | Dev bot from `create_bot` (after first deploy + URL) |
 | `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: public Lambda Java layer in `resolve-layer-arns.mjs`) |
 
-`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage.
+`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **`BOT_CLIENT_ID` / `BOT_CLIENT_SECRET`** come from GitHub Actions secrets in CI, or from gitignored **`.env.dev`** / **`.env.prod`** when you deploy locally (`scripts/serverless-deploy.sh` loads the file for the target stage). Copy from `.env.dev.example` / `.env.prod.example`.
 
 ## Workflows
 
 | Workflow | Trigger |
 |----------|---------|
-| **Test** | Push/PR to `develop` or `main` |
-| **Deploy Dev** | Push to `develop`, `dep_update_dev`, manual |
+| **Test** | PR to `develop` / `main`, manual (reusable `ci-test.yml`) |
+| **Deploy Dev** | Push to `develop`, `dep_update_dev`, manual — runs **ci-test** then deploy (no parallel Test on push) |
 | **Publish AiAi layer** | Manual only (`workflow_dispatch`) |
 
 **gameslib** `relay-dev` / `relay-prod` jobs dispatch `dep_update_*` to **bot-aiai** with `gameslib_version` (and renderer for lockfile sync).

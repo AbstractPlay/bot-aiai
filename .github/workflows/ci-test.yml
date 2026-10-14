@@ -1,0 +1,99 @@
+name: CI Test
+
+on:
+  workflow_call:
+    inputs:
+      ap_deps_stage:
+        description: dev or prod — passed to ap-install-deps --stage
+        required: true
+        type: string
+      aiai_layer_stage:
+        description: Lambda layer stage for fetch-aiai-engine (dev or prod)
+        required: true
+        type: string
+      ap_gameslib_version:
+        description: Optional gameslib version from repository_dispatch
+        required: false
+        type: string
+      ap_renderer_version:
+        description: Optional renderer version from repository_dispatch
+        required: false
+        type: string
+      ap_source:
+        description: Optional source label from repository_dispatch
+        required: false
+        type: string
+    secrets:
+      PAT_READ_PACKAGES:
+        required: true
+      AWS_KEY:
+        required: true
+      AWS_SECRET:
+        required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Pin npm
+        run: npm install -g npm@11.6.2
+
+      - name: Create .npmrc
+        run: echo "@abstractplay:registry=https://npm.pkg.github.com/" > .npmrc
+
+      - name: Add GitHub Packages auth
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.PAT_READ_PACKAGES }}" >> .npmrc
+
+      - name: Reject merge conflict markers in dep files
+        run: |
+          if grep -r '^<<<<<<<' package.json package-lock.json ci-deps.dev.json ci-deps.prod.json 2>/dev/null; then
+            echo "Conflict markers found in dependency files"
+            exit 1
+          fi
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Validate ci-deps manifests
+        run: npx ap-check-ci-deps
+
+      - name: Install pinned AP dependencies
+        env:
+          AP_GAMESLIB_VERSION: ${{ inputs.ap_gameslib_version }}
+          AP_RENDERER_VERSION: ${{ inputs.ap_renderer_version }}
+          AP_SOURCE: ${{ inputs.ap_source }}
+        run: npx ap-install-deps --stage ${{ inputs.ap_deps_stage }}
+
+      - name: Verify lockfile matches ci-deps
+        run: npx ap-check-ci-deps --stage ${{ inputs.ap_deps_stage }} --strict
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: us-east-1
+
+      - name: Fetch aiai.jar from Lambda layer
+        run: npm run fetch-aiai-engine -- --stage "${{ inputs.aiai_layer_stage }}"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test (including live AiAi jar)
+        env:
+          BOT_SUBMIT_DISABLED: '1'
+        run: npm test

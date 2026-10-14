@@ -9,6 +9,9 @@ STAGE="${1:?usage: serverless-deploy.sh <stage>}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# Local: load BOT_CLIENT_* from .env.dev / .env.prod when not already set (CI secrets win).
+eval "$(node scripts/load-stage-env.mjs --stage "$STAGE" --shell)"
+
 eval "$(node scripts/resolve-layer-arns.mjs --stage "$STAGE")"
 
 echo "gameslib layer: $GAMESLIB_LAYER_ARN"

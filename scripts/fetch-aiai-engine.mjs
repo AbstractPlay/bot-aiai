@@ -78,29 +78,22 @@ function findFileRecursive(dir, fileName) {
   return null;
 }
 
+const extractScript = path.join(path.dirname(fileURLToPath(import.meta.url)), 'extract-layer-zip.py');
+
 /**
  * Extract layer zip with POSIX paths even when the archive used Windows backslashes.
  */
 function extractLayerZip(zipPath, extractDir) {
   fs.mkdirSync(extractDir, { recursive: true });
-  const py = `
-import os, sys, zipfile
-zip_path, dest = sys.argv[1], sys.argv[2]
-with zipfile.ZipFile(zip_path) as zf:
-    for name in zf.namelist():
-        if name.endswith("/"):
-            continue
-        norm = name.replace("\\\\", "/").lstrip("/")
-        target = os.path.join(dest, *norm.split("/"))
-        os.makedirs(os.path.dirname(target), exist_ok=True)
-        with zf.open(name) as src, open(target, "wb") as out:
-            out.write(src.read())
-`;
-  try {
-    execSync(`python3 -c ${JSON.stringify(py)} "${zipPath}" "${extractDir}"`, { stdio: 'inherit' });
-    return;
-  } catch {
-    // fallback when python3 is unavailable (local Windows without Python)
+  if (fs.existsSync(extractScript)) {
+    try {
+      execSync(`python3 "${extractScript}" "${zipPath}" "${extractDir}"`, { stdio: 'inherit' });
+      return;
+    } catch (err) {
+      if (process.platform !== 'win32') {
+        throw err;
+      }
+    }
   }
   if (process.platform === 'win32') {
     execSync(
@@ -109,7 +102,7 @@ with zipfile.ZipFile(zip_path) as zf:
     );
     return;
   }
-  execSync(`unzip -oq -a "${zipPath}" -d "${extractDir}"`, { stdio: 'inherit' });
+  throw new Error(`Could not extract ${zipPath} (python3 + ${extractScript} failed)`);
 }
 
 function extractJar(zipPath) {

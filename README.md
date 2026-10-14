@@ -53,12 +53,14 @@ AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (sa
 | `npm run sync-deps` | Refresh gameslib pin (dev) |
 | `npm run layer:pack` | Build `dist/aiaicli-layer.zip` (requires jar) |
 | `npm run layer:publish -- --stage dev` | Publish `aiaicli-dev` layer (AWS SDK + profile) |
-| `npm run start:local` | Local HTTP server for ping / webhook testing (`GET` → `{ operational: true }`) |
-| `npm run package:sls` | `serverless package` (needs AWS deploy bucket access when packaging) |
+| `npm run start:local` / `start:local:dev` | Local webhook server (loads `.env.dev`) |
+| `npm run start:local:prod` | Same, using `.env.prod` |
+| `npm run package:sls` | `serverless package` for dev (loads `.env.dev`) |
+| `npm run package:sls:prod` | Package prod stage (loads `.env.prod`) |
 
 ## Environment
 
-See `.env.example`. Stage-specific values match [node-backend `serverless.yml`](https://github.com/AbstractPlay/node-backend) bot pool settings (`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, `BOT_QUERY_URL`). Bot `clientId` / `clientSecret` come from `create_bot` and must not be committed.
+Copy `.env.dev.example` → `.env.dev` (and `.env.prod.example` → `.env.prod` for prod work). Those files are gitignored; fill in `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` from `create_bot`. Stage URLs are pre-filled to match `serverless.yml`. Local commands load the matching file via `scripts/with-stage-env.mjs`; `scripts/serverless-deploy.sh` sources `.env.{stage}` when deploying from your machine. CI uses GitHub Actions secrets instead.
 
 ## AWS
 

@@ -1,10 +1,6 @@
 name: Test
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   pull_request:
     branches:
       - develop
@@ -16,16 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  resolve-layer-stage:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      AWS_REGION: us-east-1
+    outputs:
+      aiai_layer_stage: ${{ steps.stage.outputs.aiai_layer_stage }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Resolve AiAi layer stage
+      - id: stage
         run: |
           STAGE=dev
           if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.base_ref }}" = "main" ]; then
@@ -33,56 +25,15 @@ jobs:
           elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
             STAGE=prod
           fi
-          echo "AIAI_LAYER_STAGE=$STAGE" >> "$GITHUB_ENV"
+          echo "aiai_layer_stage=$STAGE" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Pin npm
-        run: npm install -g npm@11.6.2
-
-      - name: Create .npmrc
-        run: echo "@abstractplay:registry=https://npm.pkg.github.com/" > .npmrc
-      - run: echo "//npm.pkg.github.com/:_authToken=${{secrets.PAT_READ_PACKAGES}}" >> .npmrc
-
-      - name: Reject merge conflict markers in dep files
-        run: |
-          if grep -r '^<<<<<<<' package.json package-lock.json ci-deps.dev.json ci-deps.prod.json 2>/dev/null; then
-            echo "Conflict markers found in dependency files"
-            exit 1
-          fi
-
-      - name: Install NPM dependencies
-        run: npm ci
-
-      - name: Validate ci-deps manifests
-        run: npx ap-check-ci-deps
-
-      - name: Install pinned AP dependencies
-        run: npx ap-install-deps --stage dev
-
-      - name: Verify lockfile matches ci-deps
-        run: npx ap-check-ci-deps --stage dev --strict
-
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
-          aws-region: us-east-1
-
-      - name: Fetch aiai.jar from Lambda layer
-        run: npm run fetch-aiai-engine -- --stage "$AIAI_LAYER_STAGE"
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test (including live AiAi jar)
-        env:
-          BOT_SUBMIT_DISABLED: '1'
-        run: npm test
+  test:
+    needs: resolve-layer-stage
+    uses: ./.github/workflows/ci-test.yml
+    with:
+      ap_deps_stage: dev
+      aiai_layer_stage: ${{ needs.resolve-layer-stage.outputs.aiai_layer_stage }}
+    secrets:
+      PAT_READ_PACKAGES: ${{ secrets.PAT_READ_PACKAGES }}
+      AWS_KEY: ${{ secrets.AWS_KEY }}
+      AWS_SECRET: ${{ secrets.AWS_SECRET }}
