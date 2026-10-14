@@ -87,6 +87,12 @@ jobs:
           file_pattern: "ci-deps.dev.json package-lock.json package.json"
           disable_globbing: true
 
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: us-east-1
+
       - name: Configure AWS profile for Serverless CLI
         uses: Fooji/create-aws-profile-action@v1
         with:
@@ -96,7 +102,13 @@ jobs:
           secret: ${{ secrets.AWS_SECRET }}
 
       - name: Deploy dev stack
+        env:
+          AWS_SDK_LOAD_CONFIG: "1"
+          AWS_PROFILE: AbstractPlayDev
         run: bash scripts/serverless-deploy.sh dev
 
       - name: Print webhook URL
+        env:
+          AWS_SDK_LOAD_CONFIG: "1"
+          AWS_PROFILE: AbstractPlayDev
         run: npx serverless info --stage dev

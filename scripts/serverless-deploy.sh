@@ -12,7 +12,12 @@ cd "$ROOT"
 # Local: load BOT_CLIENT_* from .env.dev / .env.prod when not already set (CI secrets win).
 eval "$(node scripts/load-stage-env.mjs --stage "$STAGE" --shell)"
 
-eval "$(node scripts/resolve-layer-arns.mjs --stage "$STAGE")"
+if ! layer_out="$(node scripts/resolve-layer-arns.mjs --stage "$STAGE" 2>&1)"; then
+  echo "$layer_out"
+  echo "resolve-layer-arns failed (check AWS credentials for lambda:ListLayerVersions / GetLayerVersion)"
+  exit 1
+fi
+eval "$layer_out"
 
 echo "gameslib layer: $GAMESLIB_LAYER_ARN"
 echo "aiaicli layer:  $AIAI_CLI_LAYER_ARN"
