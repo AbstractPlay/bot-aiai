@@ -14,6 +14,8 @@
     "fetch-aiai-engine": "node scripts/fetch-aiai-engine.mjs",
     "layer:pack": "node scripts/layer-pack.mjs",
     "layer:publish": "node scripts/layer-publish.mjs",
+    "jre:layer:pack": "node scripts/jre-layer-pack.mjs",
+    "ensure:jre-layer": "node scripts/ensure-jre-layer.mjs",
     "start:local": "node scripts/with-stage-env.mjs dev tsx src/localServer.ts",
     "start:local:dev": "node scripts/with-stage-env.mjs dev tsx src/localServer.ts",
     "start:local:prod": "node scripts/with-stage-env.mjs prod tsx src/localServer.ts",

@@ -5,20 +5,28 @@ import { LambdaClient, PublishLayerVersionCommand } from '@aws-sdk/client-lambda
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const stage = process.argv.includes('--stage') ? process.argv[process.argv.indexOf('--stage') + 1] : 'dev';
+function argValue(flag) {
+  const i = process.argv.indexOf(flag);
+  return i >= 0 ? process.argv[i + 1] : undefined;
+}
+
+const stage = argValue('--stage') ?? 'dev';
 if (!stage || !['dev', 'prod'].includes(stage)) {
-  console.error('Usage: node scripts/layer-publish.mjs --stage dev|prod');
+  console.error('Usage: node scripts/layer-publish.mjs --stage dev|prod [--layer NAME] [--zip PATH] [--description TEXT]');
   process.exit(1);
 }
 
-const zipPath = path.join(root, 'dist', 'aiaicli-layer.zip');
+const layerName = argValue('--layer') ?? `aiaicli-${stage}`;
+const zipRel = argValue('--zip') ?? 'dist/aiaicli-layer.zip';
+const zipPath = path.isAbsolute(zipRel) ? zipRel : path.join(root, zipRel);
+const description = argValue('--description') ?? 'bot-aiai engine (jar + mgl)';
+
 if (!fs.existsSync(zipPath)) {
-  console.error('Missing dist/aiaicli-layer.zip — run npm run layer:pack first.');
+  console.error(`Missing ${zipPath}`);
   process.exit(1);
 }
 
 const profile = stage === 'prod' ? 'AbstractPlayProd' : 'AbstractPlayDev';
-const layerName = `aiaicli-${stage}`;
 const region = 'us-east-1';
 
 /** Lambda direct ZipFile upload is capped at 50 MiB; larger zips must use S3. */
@@ -55,7 +63,7 @@ if (zipSize <= DIRECT_UPLOAD_MAX_BYTES) {
 
 const res = await lambda.send(new PublishLayerVersionCommand({
   LayerName: layerName,
-  Description: 'bot-aiai engine (jar + mgl)',
+  Description: description,
   Content: content,
   CompatibleRuntimes: ['nodejs24.x', 'java21'],
   CompatibleArchitectures: ['x86_64'],

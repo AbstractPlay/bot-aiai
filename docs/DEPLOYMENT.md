@@ -10,7 +10,7 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 | `AWS_KEY` / `AWS_SECRET` | Deploy + layer fetch in CI (`serverless-GitHub-actions`; needs S3 on `private-ops-153672715141-us-east-1-an`, not `ssm:PutParameter` for deploy — see `provider.deploymentBucket` in `serverless.yml`) |
 | `SERVERLESS_ACCESS_KEY` | Serverless Framework dashboard |
 | `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` | Dev bot from `create_bot` (after first deploy + URL) |
-| `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: public Lambda Java layer in `resolve-layer-arns.mjs`) |
+| `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: latest `bot-aiai-jre-{stage}` in your account) |
 
 `BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **`BOT_CLIENT_ID` / `BOT_CLIENT_SECRET`** come from GitHub Actions secrets in CI, or from gitignored **`.env.dev`** / **`.env.prod`** when you deploy locally (`scripts/serverless-deploy.sh` loads the file for the target stage). Copy from `.env.dev.example` / `.env.prod.example`.
 
@@ -32,7 +32,7 @@ The legacy `aiaicli-dev` layer may list only `java21` as a compatible runtime. T
 
 `scripts/layer-publish.mjs` publishes with `nodejs24.x` and `java21`. Zips over 50 MiB upload to the AP private ops bucket (`private-ops-153672715141-us-east-1-an`, prefix `lambda-layers/`) then publish from S3. CI/local credentials need `s3:PutObject` on that prefix and `lambda:PublishLayerVersion`. Deploy resolves the **latest** `aiaicli-dev` version via `resolve-layer-arns.mjs`.
 
-The worker also attaches a **Java 21 JRE** layer (`JAVA_LAYER_ARN` secret optional; default is the public `LambdaJavaLayer` in `resolve-layer-arns.mjs`) so `java` is on PATH when spawning `aiai.jar`.
+The worker attaches an in-account **Corretto 21** layer (`bot-aiai-jre-{stage}`). AP IAM cannot use AWS’s cross-account Java layers (`753240598075`). **Deploy Dev** runs `ensure:jre-layer` to pack/publish that layer when missing; locally: `npm run ensure:jre-layer -- --stage dev`. Worker sets `AIAI_JAVA=/opt/java/bin/java` (merged with the `aiaicli` layer under `/opt/java`).
 
 ## First dev deploy
 

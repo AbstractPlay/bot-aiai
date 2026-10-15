@@ -34,7 +34,7 @@ async function main() {
   const gameslib = await latestLayerArn(`abstractplay-libs-${stage}`);
   const aiaicli = await latestLayerArn(`aiaicli-${stage}`);
   const javaLayer = process.env.JAVA_LAYER_ARN?.trim()
-    || 'arn:aws:lambda:us-east-1:753240598075:layer:LambdaJavaLayer:60';
+    || await latestLayerArn(`bot-aiai-jre-${stage}`);
 
   console.log(`GAMESLIB_LAYER_ARN=${gameslib}`);
   console.log(`AIAI_CLI_LAYER_ARN=${aiaicli}`);

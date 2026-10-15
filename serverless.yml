@@ -123,6 +123,7 @@ functions:
     reservedConcurrency: 1
     environment:
       AIAI_CLI_ROOT: /opt/java/lib/aiaicli
+      AIAI_JAVA: /opt/java/bin/java
     layers:
       - ${param:gameslibLayerArn}
       - ${param:aiaicliLayerArn}
