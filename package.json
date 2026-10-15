@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && npm run check-ci-deps && npm run typecheck",
     "test": "vitest run",
-    "check-ci-deps": "ap-check-ci-deps --stage dev --strict",
+    "check-ci-deps": "node scripts/check-ci-deps.mjs",
     "sync-deps": "ap-install-deps --stage dev",
     "sync-deps:prod": "ap-install-deps --stage prod",
     "fetch-aiai-engine": "node scripts/fetch-aiai-engine.mjs",

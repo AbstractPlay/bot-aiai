@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
+      CI_DEPS_STAGE: ${{ inputs.ap_deps_stage }}
     steps:
       - uses: actions/checkout@v4
 
