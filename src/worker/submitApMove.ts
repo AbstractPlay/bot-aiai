@@ -15,8 +15,14 @@ export async function submitApMoveFromAiai(
 
   const clientId = process.env.BOT_CLIENT_ID?.trim();
   const clientSecret = process.env.BOT_CLIENT_SECRET?.trim();
-  if (!clientId || !clientSecret || process.env.BOT_SUBMIT_DISABLED === '1') {
+  if (process.env.BOT_SUBMIT_DISABLED === '1') {
     return { ok: true, apMove, submitted: false };
+  }
+  if (!clientId || !clientSecret) {
+    return {
+      ok: false,
+      reason: 'BOT_CLIENT_ID or BOT_CLIENT_SECRET is not configured on the worker',
+    };
   }
 
   if (isSwap) {

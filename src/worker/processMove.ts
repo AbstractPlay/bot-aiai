@@ -92,6 +92,9 @@ export async function processMovePayload(payload: MoveWorkPayload): Promise<Proc
   if (!submit.ok) {
     return { ok: false, reason: submit.reason };
   }
+  if (!submit.submitted) {
+    return { ok: false, reason: 'Move was not submitted to botQuery' };
+  }
 
   console.log('processMovePayload: AiAi move', {
     gameid,
