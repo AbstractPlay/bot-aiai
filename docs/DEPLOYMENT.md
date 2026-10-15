@@ -32,7 +32,7 @@ The legacy `aiaicli-dev` layer may list only `java21` as a compatible runtime. T
 
 `scripts/layer-publish.mjs` publishes with `nodejs24.x` and `java21`. Zips over 50 MiB upload to the AP private ops bucket (`private-ops-153672715141-us-east-1-an`, prefix `lambda-layers/`) then publish from S3. CI/local credentials need `s3:PutObject` on that prefix and `lambda:PublishLayerVersion`. Deploy resolves the **latest** `aiaicli-dev` version via `resolve-layer-arns.mjs`.
 
-The worker attaches an in-account **Corretto 21** layer (`bot-aiai-jre-{stage}`). AP IAM cannot use AWS’s cross-account Java layers (`753240598075`). **Deploy Dev** runs `ensure:jre-layer` to pack/publish that layer when missing; locally: `npm run ensure:jre-layer -- --stage dev`. Worker sets `AIAI_JAVA=/opt/java/bin/java` (merged with the `aiaicli` layer under `/opt/java`).
+The worker attaches an in-account **Corretto 21** layer (`bot-aiai-jre-{stage}`), built with `jlink` so unzipped size stays under Lambda’s 250 MiB cap (a full JDK exceeds it). AP IAM cannot use AWS’s cross-account Java layers (`753240598075`). **Deploy Dev** runs `ensure:jre-layer` on Linux when the layer is missing. Worker sets `AIAI_JAVA=/opt/java/bin/java` (merged with the `aiaicli` layer under `/opt/java`). Packing requires Linux (CI or WSL), not Windows hosts.
 
 ## First dev deploy
 

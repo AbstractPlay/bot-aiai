@@ -102,9 +102,6 @@ jobs:
           secret: ${{ secrets.AWS_SECRET }}
 
       - name: Ensure bot-aiai JRE layer (in-account; AWS public Java layers are blocked)
-        env:
-          AWS_SDK_LOAD_CONFIG: "1"
-          AWS_PROFILE: AbstractPlayDev
         run: node scripts/ensure-jre-layer.mjs --stage dev
 
       - name: Deploy dev stack

@@ -35,7 +35,9 @@ const DIRECT_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
 /** Must match custom.opsPrivateBucket in serverless.yml; override with AIAI_LAYER_PUBLISH_BUCKET. */
 const OPS_PRIVATE_BUCKET = 'private-ops-153672715141-us-east-1-an';
 
-process.env.AWS_PROFILE = profile;
+if (!process.env.AWS_ACCESS_KEY_ID?.trim()) {
+  process.env.AWS_PROFILE = profile;
+}
 
 const zipBytes = fs.readFileSync(zipPath);
 const zipSize = zipBytes.length;
@@ -49,7 +51,8 @@ if (zipSize <= DIRECT_UPLOAD_MAX_BYTES) {
   content = { ZipFile: zipBytes };
 } else {
   const bucket = process.env.AIAI_LAYER_PUBLISH_BUCKET?.trim() || OPS_PRIVATE_BUCKET;
-  const key = `lambda-layers/${layerName}/${Date.now()}-aiaicli-layer.zip`;
+  const zipBase = path.basename(zipPath);
+  const key = `lambda-layers/${layerName}/${Date.now()}-${zipBase}`;
   const s3 = new S3Client({ region });
   console.log(`Uploading to s3://${bucket}/${key}…`);
   await s3.send(new PutObjectCommand({

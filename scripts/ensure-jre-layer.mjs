@@ -18,6 +18,9 @@ if (!['dev', 'prod'].includes(stage)) {
 
 const layerName = `bot-aiai-jre-${stage}`;
 const region = process.env.AWS_REGION || 'us-east-1';
+if (process.env.AWS_ACCESS_KEY_ID?.trim()) {
+  delete process.env.AWS_PROFILE;
+}
 const client = new LambdaClient({ region });
 
 const list = await client.send(new ListLayerVersionsCommand({
