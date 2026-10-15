@@ -9,10 +9,11 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 | `PAT_READ_PACKAGES` | GitHub npm for `@abstractplay/*` |
 | `AWS_KEY` / `AWS_SECRET` | Deploy + layer fetch in CI (`serverless-GitHub-actions`; needs S3 on `private-ops-153672715141-us-east-1-an`, not `ssm:PutParameter` for deploy — see `provider.deploymentBucket` in `serverless.yml`) |
 | `SERVERLESS_ACCESS_KEY` | Serverless Framework dashboard |
-| `AIAI_BOT_ID` / `AIAI_BOT_SECRET` | Dev bot from `create_bot` (mapped to Lambda `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` at deploy) |
+| `AIAI_BOT_ID_DEV` / `AIAI_BOT_SECRET_DEV` | Dev bot from `create_bot` (org secrets → Lambda `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` on **Deploy Dev**) |
+| `AIAI_BOT_ID_PROD` / `AIAI_BOT_SECRET_PROD` | Prod bot (for future **main** deploy workflow; same Lambda env mapping) |
 | `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: latest `bot-aiai-jre-{stage}` in your account) |
 
-`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **CI:** GitHub secrets **`AIAI_BOT_ID`** and **`AIAI_BOT_SECRET`** (dev deploy workflow). **Local:** gitignored **`.env.dev`** / **`.env.prod`** with `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` (see `*.example`; `serverless-deploy.sh` loads them). Both paths set the same Lambda env vars.
+`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **CI:** org secrets **`AIAI_BOT_ID_DEV`** / **`AIAI_BOT_SECRET_DEV`** (dev deploy workflow); prod uses **`AIAI_BOT_ID_PROD`** / **`AIAI_BOT_SECRET_PROD`** when the prod workflow ships. **Local:** gitignored **`.env.dev`** / **`.env.prod`** with `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` (see `*.example`; `serverless-deploy.sh` loads them). All paths set the same Lambda env vars at deploy time.
 
 ## Workflows
 
@@ -39,7 +40,7 @@ The worker Lambda is **Node 24** (webhook + orchestration) and **spawns** `java 
 1. Merge `deploy-dev.yml` and push to `develop` (or run **Deploy Dev** manually).
 2. Note **WebhookFunctionUrl** from `serverless info --stage dev`.
 3. On dev site: `create_bot` → endpoint = Function URL, name `Ai Ai`.
-4. Add `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` to repo secrets; redeploy (push or manual workflow).
+4. Add org secrets `AIAI_BOT_ID_DEV` / `AIAI_BOT_SECRET_DEV` (values from `create_bot`); redeploy (push or manual workflow).
 5. `update_bot` with the eight supported meta games.
 
 ## Layers at deploy time
