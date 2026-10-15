@@ -15,6 +15,8 @@ const zipPath = path.join(outDir, 'bot-aiai-jre-layer.zip');
 /** Lambda layer content limit (unzipped). */
 const LAYER_UNZIPPED_MAX_BYTES = 262144000;
 
+import { JRE_LAYER_DESCRIPTION } from './jre-layer-revision.mjs';
+
 const downloadUrl = process.env.CORRETTO_JDK_URL?.trim()
   || 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz';
 
@@ -27,6 +29,8 @@ const JLINK_MODULES = [
   'java.instrument',
   'java.prefs',
   'java.sql',
+  // AiAi JAR loads AWT types at startup (legacy Java Lambda had a full JDK).
+  'java.desktop',
   'jdk.crypto.ec',
   'jdk.zipfs',
   'jdk.unsupported',
@@ -127,4 +131,4 @@ if (stagedBytes > LAYER_UNZIPPED_MAX_BYTES) {
 console.log(`Staged JRE tree: ${stagedBytes} bytes (unzipped)`);
 
 zipLayer();
-console.log(`Wrote ${zipPath} (mounts at /opt/java; set AIAI_JAVA=/opt/java/bin/java)`);
+console.log(`Wrote ${zipPath} (${JRE_LAYER_DESCRIPTION}; mounts at /opt/java)`);

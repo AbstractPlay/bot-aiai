@@ -56,9 +56,19 @@ async function runAiaiCli(args: string[]): Promise<{ stdout: string; stderr: str
   const cmd = [javaBinary(), '-jar', jarPath, ...args];
 
   return new Promise((resolve, reject) => {
+    const javaToolOptions = [
+      process.env.JAVA_TOOL_OPTIONS,
+      '-Djava.awt.headless=true',
+    ]
+      .filter((part) => part && part.trim().length > 0)
+      .join(' ');
     const child = spawn(cmd[0]!, cmd.slice(1), {
       cwd: root,
-      env: { ...process.env, HOME: process.env.HOME || '/tmp' },
+      env: {
+        ...process.env,
+        HOME: process.env.HOME || '/tmp',
+        JAVA_TOOL_OPTIONS: javaToolOptions,
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = '';

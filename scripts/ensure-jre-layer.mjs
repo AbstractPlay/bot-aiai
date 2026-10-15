@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Ensure bot-aiai-jre-{stage} exists; pack + publish when missing.
+ * Ensure bot-aiai-jre-{stage} exists and matches the current jlink revision; pack + publish when needed.
  */
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LambdaClient, ListLayerVersionsCommand } from '@aws-sdk/client-lambda';
+import { JRE_LAYER_DESCRIPTION, JRE_LAYER_REVISION } from './jre-layer-revision.mjs';
 
 const stage = process.argv.includes('--stage')
   ? process.argv[process.argv.indexOf('--stage') + 1]
@@ -28,15 +29,26 @@ const list = await client.send(new ListLayerVersionsCommand({
   MaxItems: 1,
 }));
 
-if ((list.LayerVersions ?? []).length > 0) {
-  console.log(`JRE layer ${layerName} already published`);
+const latest = list.LayerVersions?.[0];
+const description = latest?.Description ?? '';
+const revisionOk = description.includes(JRE_LAYER_REVISION);
+
+if (latest && revisionOk) {
+  console.log(`JRE layer ${layerName} version ${latest.Version} is current (${JRE_LAYER_REVISION})`);
   process.exit(0);
 }
 
-console.log(`JRE layer ${layerName} missing — packing and publishing…`);
+if (latest && !revisionOk) {
+  console.log(
+    `JRE layer ${layerName} version ${latest.Version} is stale (description: ${description || '(none)'}); republishing…`,
+  );
+} else {
+  console.log(`JRE layer ${layerName} missing — packing and publishing…`);
+}
+
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 execSync('node scripts/jre-layer-pack.mjs', { cwd: root, stdio: 'inherit' });
 execSync(
-  `node scripts/layer-publish.mjs --stage ${stage} --layer ${layerName} --zip dist/bot-aiai-jre-layer.zip --description "Corretto 21 for bot-aiai worker"`,
+  `node scripts/layer-publish.mjs --stage ${stage} --layer ${layerName} --zip dist/bot-aiai-jre-layer.zip --description "${JRE_LAYER_DESCRIPTION}"`,
   { cwd: root, stdio: 'inherit' },
 );

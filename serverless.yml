@@ -124,6 +124,7 @@ functions:
     environment:
       AIAI_CLI_ROOT: /opt/java/lib/aiaicli
       AIAI_JAVA: /opt/java/bin/java
+      JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
     layers:
       - ${param:gameslibLayerArn}
       - ${param:aiaicliLayerArn}
