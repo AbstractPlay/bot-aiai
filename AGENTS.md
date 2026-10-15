@@ -16,7 +16,7 @@ Standalone AiAi registered bot: HTTPS webhook + SQS worker (Java engine via Lamb
 | Command | When |
 |---------|------|
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | ESLint + `ap-check-ci-deps --strict` + typecheck |
+| `npm run lint` | ESLint + `ap-check-ci-deps --strict` (stage from `CI_DEPS_STAGE`, default dev) + typecheck |
 | `npm test` | Vitest |
 | `npm run sync-deps` | Refresh gameslib/renderer pins from `ci-deps.dev.json` |
 | `npm run start:local` | Local webhook on `PORT` (default 3847) |
