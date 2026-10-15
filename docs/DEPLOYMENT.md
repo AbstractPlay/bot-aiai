@@ -21,6 +21,7 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 |----------|---------|
 | **Test** | PR to `develop` / `main`, manual (reusable `ci-test.yml`) |
 | **Deploy Dev** | Push to `develop`, `dep_update_dev`, manual — runs **ci-test** then deploy (no parallel Test on push) |
+| **Deploy Prod** | Push to `main`, `dep_update_prod`, manual — same pattern as dev with `AIAI_BOT_ID_PROD` / `AIAI_BOT_SECRET_PROD` |
 | **Publish AiAi layer** | Manual only (`workflow_dispatch`) |
 
 **gameslib** `relay-dev` / `relay-prod` jobs dispatch `dep_update_*` to **bot-aiai** with `gameslib_version` (and renderer for lockfile sync).
