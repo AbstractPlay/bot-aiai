@@ -1,13 +1,22 @@
 import { GameFactory } from '@abstractplay/gameslib';
 import { describe, expect, it } from 'vitest';
 import { triAi2Ap, triAp2Ai } from '../src/dialect/coords.js';
-import { aiaiMgl, stateToAiai } from '../src/dialect/index.js';
+import { aiaiMgl, stateToAiai, translateAiai } from '../src/dialect/index.js';
 
 describe('dialect', () => {
   it('round-trips trike cell labels on 11x11', () => {
     const ap = 'f6';
     const ai = triAp2Ai(ap, 11);
     expect(triAi2Ap(ai, 11)).toBe(ap);
+  });
+
+  it('joins amazons queen move and arrow from pipe-separated AiAi steps', () => {
+    const engine = GameFactory('amazons', undefined, []);
+    expect(engine).toBeDefined();
+    if (!engine) {
+      return;
+    }
+    expect(translateAiai(engine, 'd1-d9|g9')).toBe('d1-d9/g9');
   });
 
   it('exports trike mgl name and empty history', () => {

@@ -170,6 +170,21 @@ export function translateAiai(engine: GameBase, move: string): string {
   if (move === 'Swap') {
     return 'Swap';
   }
+  const uid = gameUid(engine);
+  // AiAi emits queen move and arrow as two think-loop steps (d1-d9|g9); AP uses move/arrow.
+  if (uid === 'amazons' && move.includes('|')) {
+    const parts = move.split('|');
+    if (parts.length === 2) {
+      return `${parts[0]}/${parts[1]}`;
+    }
+    if (parts.length > 2 && parts.length % 2 === 0) {
+      const rounds: string[] = [];
+      for (let i = 0; i < parts.length; i += 2) {
+        rounds.push(`${parts[i]}/${parts[i + 1]}`);
+      }
+      return rounds.join('|');
+    }
+  }
   if (!move.includes('|')) {
     return translateAiaiMove(engine, move);
   }
@@ -181,8 +196,11 @@ export function translateAiaiMove(engine: GameBase, move: string): string {
   const uid = gameUid(engine);
 
   if (uid === 'amazons') {
-    const [mv, shot] = move.split('|');
-    return `${mv}/${shot}`;
+    if (move.includes('|')) {
+      const [mv, shot] = move.split('|');
+      return `${mv}/${shot}`;
+    }
+    return move;
   }
 
   if (uid === 'fanorona') {
