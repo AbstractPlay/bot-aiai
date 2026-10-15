@@ -24,7 +24,7 @@ const region = 'us-east-1';
 /** Lambda direct ZipFile upload is capped at 50 MiB; larger zips must use S3. */
 const DIRECT_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
 
-/** AP private ops bucket (us-east-1); override with AIAI_LAYER_PUBLISH_BUCKET. */
+/** Must match custom.opsPrivateBucket in serverless.yml; override with AIAI_LAYER_PUBLISH_BUCKET. */
 const OPS_PRIVATE_BUCKET = 'private-ops-153672715141-us-east-1-an';
 
 process.env.AWS_PROFILE = profile;

@@ -7,7 +7,7 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 | Secret | Purpose |
 |--------|---------|
 | `PAT_READ_PACKAGES` | GitHub npm for `@abstractplay/*` |
-| `AWS_KEY` / `AWS_SECRET` | Deploy + layer fetch in CI |
+| `AWS_KEY` / `AWS_SECRET` | Deploy + layer fetch in CI (`serverless-GitHub-actions`; needs S3 on `private-ops-153672715141-us-east-1-an`, not `ssm:PutParameter` for deploy — see `provider.deploymentBucket` in `serverless.yml`) |
 | `SERVERLESS_ACCESS_KEY` | Serverless Framework dashboard |
 | `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` | Dev bot from `create_bot` (after first deploy + URL) |
 | `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: public Lambda Java layer in `resolve-layer-arns.mjs`) |

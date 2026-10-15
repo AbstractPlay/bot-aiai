@@ -16,6 +16,9 @@ plugins:
   - serverless-esbuild
 
 custom:
+  # Shared with scripts/layer-publish.mjs (large layer zips + Serverless v4 deploy artifacts).
+  opsPrivateBucket: private-ops-153672715141-us-east-1-an
+
   stageConfig:
     dev:
       profile: AbstractPlayDev
@@ -61,6 +64,11 @@ provider:
   stage: ${opt:stage, 'dev'}
   profile: ${self:custom.stageConfig.${self:provider.stage}.profile}
   region: us-east-1
+  # Avoid SSM PutParameter on /serverless-framework/deployment/s3-bucket (CI lacks ssm:PutParameter).
+  deploymentBucket:
+    name: ${self:custom.opsPrivateBucket}
+    blockPublicAccess: true
+  deploymentPrefix: serverless/bot-aiai/${self:provider.stage}
   logRetentionInDays: 14
   stackTags:
     ap:service: bot-aiai
