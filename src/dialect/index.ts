@@ -11,6 +11,10 @@ type EngineWithBoard = EngineWithVariants & {
   currplayer: number;
 };
 
+export function engineGameUid(engine: GameBase): string {
+  return gameUid(engine);
+}
+
 function gameUid(engine: GameBase): string {
   const ctor = engine.constructor as typeof GameBase & { gameinfo: { uid: string } };
   return ctor.gameinfo.uid;
@@ -171,6 +175,10 @@ export function translateAiai(engine: GameBase, move: string): string {
     return 'Swap';
   }
   const uid = gameUid(engine);
+  // Multi-hop captures are one AP move (comma-separated); do not split on | per segment.
+  if (uid === 'fanorona' && move.includes('|')) {
+    return fanoronaTranslateAiai(move);
+  }
   // AiAi emits queen move and arrow as two think-loop steps (d1-d9|g9); AP uses move/arrow.
   if (uid === 'amazons' && move.includes('|')) {
     const parts = move.split('|');
@@ -184,6 +192,15 @@ export function translateAiai(engine: GameBase, move: string): string {
       }
       return rounds.join('|');
     }
+  }
+  // Multi-cell placement is one AP move; Swap|cell is handled in submitApMove (pie + move).
+  if (uid === 'tumbleweed' && move.includes('|')) {
+    const pipe = move.indexOf('|');
+    const head = move.slice(0, pipe);
+    if (head === 'Play White (first)' || head === 'Swap') {
+      return translateAiaiMove(engine, move.slice(pipe + 1));
+    }
+    return translateAiaiMove(engine, move);
   }
   if (!move.includes('|')) {
     return translateAiaiMove(engine, move);

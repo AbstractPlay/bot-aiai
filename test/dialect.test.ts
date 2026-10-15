@@ -10,6 +10,15 @@ describe('dialect', () => {
     expect(triAi2Ap(ai, 11)).toBe(ap);
   });
 
+  it('joins fanorona multi-hop captures into one comma-separated AP move', () => {
+    const engine = GameFactory('fanorona', undefined, []);
+    expect(engine).toBeDefined();
+    if (!engine) {
+      return;
+    }
+    expect(translateAiai(engine, 'e2-e3x|e3-d4x|xd4-e5|xe5-d5')).toBe('e2e3+,d4+,e5-,d5-');
+  });
+
   it('joins amazons queen move and arrow from pipe-separated AiAi steps', () => {
     const engine = GameFactory('amazons', undefined, []);
     expect(engine).toBeDefined();
