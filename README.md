@@ -60,7 +60,7 @@ AP package versions are pinned in `ci-deps.dev.json` and `ci-deps.prod.json` (sa
 
 ## Environment
 
-Copy `.env.dev.example` → `.env.dev` (and `.env.prod.example` → `.env.prod` for prod work). Those files are gitignored; fill in `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` from `create_bot`. Stage URLs are pre-filled to match `serverless.yml`. Local commands load the matching file via `scripts/with-stage-env.mjs`; `scripts/serverless-deploy.sh` sources `.env.{stage}` when deploying from your machine. CI uses GitHub Actions secrets instead.
+Copy `.env.dev.example` → `.env.dev` (and `.env.prod.example` → `.env.prod` for prod work). Those files are gitignored; fill in `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` from `create_bot`. Stage URLs are pre-filled to match `serverless.yml`. Local commands load the matching file via `scripts/with-stage-env.mjs`; `scripts/serverless-deploy.sh` sources `.env.{stage}` when deploying from your machine. **CI** uses GitHub secrets **`AIAI_BOT_ID`** / **`AIAI_BOT_SECRET`** (mapped to the same Lambda env at deploy).
 
 ## AWS
 

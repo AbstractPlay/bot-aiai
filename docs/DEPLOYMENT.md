@@ -9,10 +9,10 @@ Configure on **AbstractPlay/bot-aiai** (same AWS keys as node-backend where note
 | `PAT_READ_PACKAGES` | GitHub npm for `@abstractplay/*` |
 | `AWS_KEY` / `AWS_SECRET` | Deploy + layer fetch in CI (`serverless-GitHub-actions`; needs S3 on `private-ops-153672715141-us-east-1-an`, not `ssm:PutParameter` for deploy — see `provider.deploymentBucket` in `serverless.yml`) |
 | `SERVERLESS_ACCESS_KEY` | Serverless Framework dashboard |
-| `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` | Dev bot from `create_bot` (after first deploy + URL) |
+| `AIAI_BOT_ID` / `AIAI_BOT_SECRET` | Dev bot from `create_bot` (mapped to Lambda `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` at deploy) |
 | `JAVA_LAYER_ARN` | Optional override for worker JRE layer (default: latest `bot-aiai-jre-{stage}` in your account) |
 
-`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **`BOT_CLIENT_ID` / `BOT_CLIENT_SECRET`** come from GitHub Actions secrets in CI, or from gitignored **`.env.dev`** / **`.env.prod`** when you deploy locally (`scripts/serverless-deploy.sh` loads the file for the target stage). Copy from `.env.dev.example` / `.env.prod.example`.
+`BOT_TOKEN_URL`, `BOT_OAUTH_SCOPE`, and `BOT_QUERY_URL` are set in `serverless.yml` per stage. **CI:** GitHub secrets **`AIAI_BOT_ID`** and **`AIAI_BOT_SECRET`** (dev deploy workflow). **Local:** gitignored **`.env.dev`** / **`.env.prod`** with `BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` (see `*.example`; `serverless-deploy.sh` loads them). Both paths set the same Lambda env vars.
 
 ## Workflows
 

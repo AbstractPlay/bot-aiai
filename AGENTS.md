@@ -37,4 +37,4 @@ Handoff: **`npm run lint`** and **`npm test`** exit 0.
 
 Pins in `ci-deps.dev.json` / `ci-deps.prod.json`; CI uses `ap-install-deps`. Do not commit `file:` deps or `engine/aiai.jar`.
 
-Local bot OAuth: `.env.dev` / `.env.prod` (from `*.example`; gitignored). `npm run start:local:dev` and `scripts/serverless-deploy.sh` load them; existing process env wins (CI secrets).
+Local bot OAuth: `.env.dev` / `.env.prod` (`BOT_CLIENT_ID` / `BOT_CLIENT_SECRET` in file). CI deploy: GitHub secrets `AIAI_BOT_ID` / `AIAI_BOT_SECRET` → same Lambda env. Existing process env wins over `.env` when set.

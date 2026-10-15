@@ -35,8 +35,9 @@ jobs:
       AWS_REGION: us-east-1
       SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
       SERVERLESS_ORG: abstractplay
-      BOT_CLIENT_ID: ${{ secrets.BOT_CLIENT_ID }}
-      BOT_CLIENT_SECRET: ${{ secrets.BOT_CLIENT_SECRET }}
+      # GitHub secret names → Serverless/Lambda env (see serverless.yml BOT_CLIENT_*)
+      BOT_CLIENT_ID: ${{ secrets.AIAI_BOT_ID }}
+      BOT_CLIENT_SECRET: ${{ secrets.AIAI_BOT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
