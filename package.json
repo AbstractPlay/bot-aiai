@@ -35,8 +35,8 @@
   },
   "packageManager": "npm@11.6.2",
   "dependencies": {
-    "@abstractplay/gameslib": "1.0.0-ci-41549884610.0",
-    "@abstractplay/renderer": "1.0.0-ci-41318908683.0",
+    "@abstractplay/gameslib": "1.0.0-ci-41715549429.0",
+    "@abstractplay/renderer": "1.0.0-ci-41714483652.0",
     "@aws-sdk/client-lambda": "3.1090.0",
     "@aws-sdk/client-s3": "3.1090.0",
     "@aws-sdk/client-sqs": "3.1090.0"
